@@ -19,6 +19,7 @@ function preprocessImage(imgElement) {
 
   // Get pixel data and normalize to [0,1]
   const imageData = ctx.getImageData(0, 0, 64, 64).data;
+  console.log('ImageData length:', imageData.length);
   const float32Data = new Float32Array(3 * 64 * 64);
 
   for (let i = 0; i < 64*64; i++) {
@@ -42,6 +43,7 @@ async function runModel() {
   img.src = URL.createObjectURL(fileInput.files[0]);
   img.onload = async () => {
       const inputTensor = preprocessImage(img);
+      console.log('Input tensor shape:', inputTensor.dims); // should be [1,3,64,64]
       const feeds = { "input": inputTensor }; // exact tensor name from ONNX export
       const results = await session.run(feeds);
   
