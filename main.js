@@ -2,7 +2,7 @@ let session;
 
 // Load ONNX model
 async function initModel() {
-  session = await ort.InferenceSession.create('cnn_model.onnx');
+  session = await ort.InferenceSession.create('cnn_model_merged.onnx');
   console.log('Model loaded');
   document.getElementById('classifyBtn').disabled = false;
 }
