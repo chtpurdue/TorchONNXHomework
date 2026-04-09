@@ -8,7 +8,7 @@
 <body>
   <h1>Cat vs Dog</h1>
   <input type="file" id="imageInput" accept="image/*"/>
-  <button onclick="runModel()">Classify Image</button>
+  <button id="classifyBtn" onclick="runModel()" disabled>Classify Image</button>
   <p id="output"></p>
   <canvas id="canvas" style="display:none;"></canvas>
   <script src="main.js"></script>
