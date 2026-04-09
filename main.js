@@ -43,14 +43,22 @@ async function runModel() {
   img.src = URL.createObjectURL(fileInput.files[0]);
   img.onload = async () => {
       const inputTensor = preprocessImage(img);
-      console.log('Input tensor shape:', inputTensor.dims); // should be [1,3,64,64]
       const feeds = { "input": inputTensor }; // exact tensor name from ONNX export
       const results = await session.run(feeds);
   
-      const output = results.output.data;
-      const classIndex = output[0] > output[1] ? 0 : 1;
+      const output = results.output.data; // raw logits from model
+      const exp0 = Math.exp(output[0]);
+      const exp1 = Math.exp(output[1]);
+      const sumExp = exp0 + exp1;
+
+      const prob0 = exp0 / sumExp; // probability for class 0
+      const prob1 = exp1 / sumExp; // probability for class 1
+
+      const classIndex = prob0 > prob1 ? 0 : 1;
       const classes = ["Cat", "Dog"];
-      document.getElementById('output').innerText = `Prediction: ${classes[classIndex]}`;
+      document.getElementById('output').innerText =
+        `Prediction: ${classes[classIndex]} \n` +
+        `Probabilities: Cat: ${prob0.toFixed(3)}, Dog: ${prob1.toFixed(3)}`;
   };
 }
 
