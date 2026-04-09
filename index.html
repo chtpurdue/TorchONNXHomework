@@ -2,14 +2,15 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Model on the runway looking fine</title>
+  <title>model on the runway looking fine</title>
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 </head>
 <body>
   <h1>Cat vs Dog</h1>
-  <input type="file" id="imageInput" />
-  <button onclick="runModel()">Run Model</button>
+  <input type="file" id="imageInput" accept="image/*"/>
+  <button onclick="runModel()">Classify Image</button>
   <p id="output"></p>
+  <canvas id="canvas" style="display:none;"></canvas>
   <script src="main.js"></script>
 </body>
 </html>
