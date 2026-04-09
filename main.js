@@ -23,9 +23,9 @@ function preprocessImage(imgElement) {
   const float32Data = new Float32Array(3 * 64 * 64);
 
   for (let i = 0; i < 64*64; i++) {
-    float32Data[i] = imageData[i*4] / 255.0;          // R
-    float32Data[i + 64*64] = imageData[i*4 + 1] / 255.0; // G
-    float32Data[i + 2*64*64] = imageData[i*4 + 2] / 255.0; // B
+    float32Data[i] = (imageData[i*4]/255.0 - 0.5)/0.5;       // R
+    float32Data[i + 64*64] = (imageData[i*4+1]/255.0 - 0.5)/0.5; // G
+    float32Data[i + 2*64*64] = (imageData[i*4+2]/255.0 - 0.5)/0.5; // B
   }
 
   return new ort.Tensor('float32', float32Data, [1, 3, 64, 64]);
