@@ -13,21 +13,21 @@ function preprocessImage(imgElement) {
   const ctx = canvas.getContext('2d');
 
   // Resize to 224x224
-  canvas.width = 224;
-  canvas.height = 224;
-  ctx.drawImage(imgElement, 0, 0, 224, 224);
+  canvas.width = 64;
+  canvas.height = 64;
+  ctx.drawImage(imgElement, 0, 0, 64, 64);
 
   // Get pixel data and normalize to [0,1]
-  const imageData = ctx.getImageData(0, 0, 224, 224).data;
-  const float32Data = new Float32Array(3 * 224 * 224);
+  const imageData = ctx.getImageData(0, 0, 64, 64).data;
+  const float32Data = new Float32Array(3 * 64 * 64);
 
-  for (let i = 0; i < 224*224; i++) {
+  for (let i = 0; i < 64*64; i++) {
     float32Data[i] = imageData[i*4] / 255.0;          // R
-    float32Data[i + 224*224] = imageData[i*4 + 1] / 255.0; // G
-    float32Data[i + 2*224*224] = imageData[i*4 + 2] / 255.0; // B
+    float32Data[i + 64*64] = imageData[i*4 + 1] / 255.0; // G
+    float32Data[i + 2*64*64] = imageData[i*4 + 2] / 255.0; // B
   }
 
-  return new ort.Tensor('float32', float32Data, [1, 3, 224, 224]);
+  return new ort.Tensor('float32', float32Data, [1, 3, 64, 64]);
 }
 
 // Run model on uploaded image
