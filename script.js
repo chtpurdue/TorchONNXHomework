@@ -2,8 +2,9 @@ let session;
 
 // Load ONNX model
 async function initModel() {
-  session = await ort.InferenceSession.create('model/cnn_model.onnx');
+  session = await ort.InferenceSession.create('cnn_model.onnx');
   console.log('Model loaded');
+  document.getElementById('classifyBtn').disabled = false;
 }
 
 // Preprocess uploaded image to [1, 3, 224, 224] float32
@@ -40,14 +41,14 @@ async function runModel() {
   const img = new Image();
   img.src = URL.createObjectURL(fileInput.files[0]);
   img.onload = async () => {
-    const inputTensor = preprocessImage(img);
-    const feeds = { input: inputTensor };
-    const results = await session.run(feeds);
-
-    const output = results.output.data;
-    const classIndex = output[0] > output[1] ? 0 : 1;
-    const classes = ["Cat", "Dog"];
-    document.getElementById('output').innerText = `Prediction: ${classes[classIndex]}`;
+      const inputTensor = preprocessImage(img);
+      const feeds = { "input": inputTensor }; // exact tensor name from ONNX export
+      const results = await session.run(feeds);
+  
+      const output = results.output.data;
+      const classIndex = output[0] > output[1] ? 0 : 1;
+      const classes = ["Cat", "Dog"];
+      document.getElementById('output').innerText = `Prediction: ${classes[classIndex]}`;
   };
 }
 
