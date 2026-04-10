@@ -33,6 +33,10 @@ function preprocessImage(imgElement) {
 
 // Run model on uploaded image
 async function runModel() {
+  if (!session) {
+    alert("Model is still loading. Please wait.");
+    return;
+  }
   const fileInput = document.getElementById('imageInput');
   if (fileInput.files.length === 0) {
     alert("Please upload an image first.");
