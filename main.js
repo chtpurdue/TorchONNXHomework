@@ -13,22 +13,22 @@ function preprocessImage(imgElement) {
   const ctx = canvas.getContext('2d');
 
   // Resize to 224x224
-  canvas.width = 64;
-  canvas.height = 64;
-  ctx.drawImage(imgElement, 0, 0, 64, 64);
+  canvas.width = 224;
+  canvas.height = 224;
+  ctx.drawImage(imgElement, 0, 0, 224, 224);
 
   // Get pixel data and normalize to [0,1]
-  const imageData = ctx.getImageData(0, 0, 64, 64).data;
+  const imageData = ctx.getImageData(0, 0, 224, 224).data;
   console.log('ImageData length:', imageData.length);
-  const float32Data = new Float32Array(3 * 64 * 64);
+  const float32Data = new Float32Array(3 * 224 * 224);
 
-  for (let i = 0; i < 64*64; i++) {
-    float32Data[i] = (imageData[i*4]/255.0 - 0.5)/0.5;       // R
-    float32Data[i + 64*64] = (imageData[i*4+1]/255.0 - 0.5)/0.5; // G
-    float32Data[i + 2*64*64] = (imageData[i*4+2]/255.0 - 0.5)/0.5; // B
+  for (let i = 0; i < 224*224; i++) {
+    float32Data[i] = (imageData[i*4]/255.0 - 0.5)/0.5; // R
+    float32Data[i + 224*224] = (imageData[i*4+1]/255.0 - 0.5)/0.5; // G
+    float32Data[i + 2*224*224] = (imageData[i*4+2]/255.0 - 0.5)/0.5; // B
   }
 
-  return new ort.Tensor('float32', float32Data, [1, 3, 64, 64]);
+  return new ort.Tensor('float32', float32Data, [1, 3, 224, 224]);
 }
 
 // Run model on uploaded image
@@ -42,13 +42,15 @@ async function runModel() {
   const img = new Image();
   img.src = URL.createObjectURL(fileInput.files[0]);
   img.onload = async () => {
+      URL.revokeObjectURL(img.src);
       const inputTensor = preprocessImage(img);
-      const feeds = { "input": inputTensor }; // exact tensor name from ONNX export
+      const feeds = { "input": inputTensor };
       const results = await session.run(feeds);
   
       const output = results.output.data; // raw logits from model
-      const exp0 = Math.exp(output[0]);
-      const exp1 = Math.exp(output[1]);
+      const maxLogit = Math.max(output[0], output[1]);
+      const exp0 = Math.exp(output[0] - maxLogit);
+      const exp1 = Math.exp(output[1] - maxLogit);
       const sumExp = exp0 + exp1;
 
       const prob0 = exp0 / sumExp; // probability for class 0
